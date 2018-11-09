@@ -129,12 +129,24 @@
     }
 
 
-    function deleteNote(fileName) {
-        fs.unlink(`data/${fileName}`, (err) => {
+    function deleteNote() {
+
+        let noteName = document.getElementById('title').innerText;
+        fs.unlink(`data/${noteName}.html`, (err) => {
             if (err) throw err;
-            console.log(`data/${fileName}`);
+            else {
+                console.log(`deleted: ${noteName}.html`);
+                let parent = document.getElementById('navbar');
+                let note = document.getElementById(noteName);
+                parent.removeChild(note);
+
+                document.getElementById('title').innerText = 'Select a new note';
+                document.getElementById('content').innerText = '';
+            }
         });
     }
+
+
 
     function addTab(noteName) {
         console.log('adding tab: ' + noteName);
@@ -142,28 +154,62 @@
 
         let li = document.createElement("li");                 // Create a <li> node
         li.classList.add("nav-item");
+        li.setAttribute('id', noteName);
 
         let a = document.createElement("a");
 
+        let div = document.createElement('div');
+        div.setAttribute('class', 'dropdown');
+        let button = document.createElement('button');
+
+        div.appendChild(button);
+        button.setAttribute('class', 'btn btn-light dropdown-toggle');
+        button.setAttribute('type', 'button');
+        button.setAttribute('id', `dropDown--${noteName}`);
+        button.setAttribute('data-toggle', 'dropdown');
+        button.setAttribute('aria-haspopup', 'true');
+        button.setAttribute('aria-expanded', 'false');
+
+        let optionsDiv = document.createElement('div');
+
+        button.appendChild(optionsDiv);
+        optionsDiv.setAttribute('class', 'dropdown-menu');
+        optionsDiv.setAttribute('aria-labelledby', 'dropdownMenuButton');
+
+        let deleteOption = document.createElement('a');
+        deleteOption.setAttribute('class', 'dropdown-item');
+
+        let deleteNode = document.createTextNode('delete');
+        deleteOption.appendChild(deleteNode);
+        deleteOption.setAttribute('onclick', 'deleteNote()');
+        optionsDiv.appendChild(deleteOption);
+
+        /*
+        <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown button
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+  </div>
+</div>
 
 
+         */
 
 
-        let deleteIcon = document.createElement('span');
-
-        deleteIcon.setAttribute('class', 'oi oi-trash');
-        deleteIcon.setAttribute('id', `${noteName}-delete`);
 
         a.setAttribute('class', 'nav-link active');
         a.setAttribute('href', '#');
-        a.setAttribute('id', noteName);
-        console.log(`setting id as: ${noteName}`);
-
+        // a.setAttribute('id', noteName);
         let textNode = document.createTextNode(noteName);
 
         a.appendChild(textNode);
-        a.appendChild(deleteIcon);
+        a.appendChild(div);
         li.appendChild(a);
+
 
         document.getElementById("navbar").appendChild(li);
         document.getElementById("title").innerText = noteName;
@@ -178,13 +224,8 @@
 
             document.getElementById("title").innerHTML = noteName;
 
-            // document.getElementById("").setAttribute();
 
         });
-
-        // document.getElementById(`${name}-delete`).addEventListener("click", function () {
-        //     deleteNote(fileName);
-        // });
 
     }
 
@@ -251,7 +292,6 @@
 
     loadNotes();
 </script>
-
 
 </body>
 </html>
