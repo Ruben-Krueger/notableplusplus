@@ -19,9 +19,9 @@
 
 <div class="container-fluid">
 
-    <h1 style="display: inline">Notable+</h1>
+    <h1 style="display: inline">NotablePlusPlus</h1>
     <button class="btn btn-dark float-right" data-toggle="modal" data-target="#exampleModal" style="margin-top: 10px">New Note</button>
-
+    <!--<button class="btn btn-dark float-right" data-toggle="modal" data-target="#newFolderModal" style="margin-top: 10px">New Folder</button>-->
     <div class="row">
         <div class="col-4">
             <div>
@@ -73,6 +73,32 @@
 </div>
 
 
+<!-- Modal to create rename a note-->
+<div class="modal fade" id="renameNoteModal" tabindex="-1" role="dialog" aria-labelledby="renameNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="renameModalLabel">Rename a note</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="renameNoteModalLabel" class="col-form-label">New note name:</label>
+                        <input type="text" class="form-control" id="renameNoteModalLabel">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-dark" data-dismiss="modal" onclick= "renameNote(document.getElementById('renameNoteModalLabel').value)">Rename</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal if note already exists -->
 <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -92,6 +118,52 @@
     </div>
 </div>
 
+<!--Modal if folder already exists-->
+<div class="modal fade" id="folderErrorModal" tabindex="-1" role="dialog" aria-labelledby="folderErrorModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Error: a folder already exists with that name</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal to create a new folder -->
+<div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog" aria-labelledby="newFolderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Create a new folder</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="folderName" class="col-form-label">Folder name:</label>
+                        <input type="text" class="form-control" id="folderName">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-dark" data-dismiss="modal" onclick="createFolder(document.getElementById('folderName').value)">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="../js/bootstrap.bundle.js"></script>
 <script src="../js/main.js"> </script>
 <script>
@@ -99,10 +171,6 @@
 
     const { ipcRenderer, remote } = require('electron');
     const fs = require('fs');
-
-    let doc = document.getElementById('content');
-    doc.contentEditable = true;
-    doc.focus();
 
     function createNote(noteName) {
 
@@ -125,13 +193,17 @@
             });
             document.getElementById('content').innerText = '';
 
+            let doc = document.getElementById('content');
+            doc.contentEditable = true;
+            doc.focus();
+
         }
     }
-
 
     function deleteNote() {
 
         let noteName = document.getElementById('title').innerText;
+
         fs.unlink(`data/${noteName}.html`, (err) => {
             if (err) throw err;
             else {
@@ -144,8 +216,29 @@
                 document.getElementById('content').innerText = '';
             }
         });
+
+        let doc = document.getElementById('content');
+        doc.contentEditable = 'false';
     }
-    
+
+    // function renameNote(newNoteName){
+    //
+    //     let noteName = document.getElementById('title').innerText;
+    //
+    //     console.log(`renaming note: ${noteName} to: ${newNoteName}`);
+    //
+    //     fs.rename(`data/${noteName}.html`, `data/${newNoteName}.html`, function(err) {
+    //         if ( err ) console.log('ERROR: ' + err);
+    //     });
+    //
+    //     document.getElementById('title').innerText = newNoteName;
+    // }
+
+
+    function addFolderTab(){
+
+    }
+
 
     function addTab(noteName) {
         console.log('adding tab: ' + noteName);
@@ -157,7 +250,7 @@
 
         let a = document.createElement("a");
 
-        let div = document.createElement('div');
+        let div = document.createElement('span');
         div.setAttribute('class', 'dropdown');
         let button = document.createElement('button');
 
@@ -177,28 +270,22 @@
 
         let deleteOption = document.createElement('a');
         deleteOption.setAttribute('class', 'dropdown-item');
-
         let deleteNode = document.createTextNode('delete');
         deleteOption.appendChild(deleteNode);
-        deleteOption.setAttribute('onclick', 'deleteNote()');
+        deleteOption.setAttribute('onclick', `deleteNote()`);
         optionsDiv.appendChild(deleteOption);
 
-        /*
-        <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown button
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
-  </div>
-</div>
+        // let renameOption = document.createElement('a');
+        // deleteOption.setAttribute('class', 'dropdown-item');
+        // let renameNode = document.createTextNode('rename');
+        // renameOption.appendChild(renameNode);
+        //
+        // renameOption.addEventListener('click', function() {
+        //     $("#renameNoteModal").modal();
+        // });
 
 
-         */
-
-
+        // optionsDiv.appendChild(renameOption);
 
         a.setAttribute('class', 'nav-link active');
         a.setAttribute('href', '#');
@@ -222,6 +309,10 @@
             document.getElementById("content").innerHTML = data.toString();
 
             document.getElementById("title").innerHTML = noteName;
+
+            let doc = document.getElementById('content');
+            doc.contentEditable = true;
+            doc.focus();
 
 
         });
@@ -253,9 +344,13 @@
         });
     }
 
-
-
     function loadNotes() {
+        if (!fs.existsSync('data/')) {
+            fs.mkdirSync('data/', function (err) {
+                console.log(err);
+            });
+        }
+
         // Loop through all the files in the data directory
         fs.readdir('data/', function( err, files ) {
             if( err ) {
@@ -274,8 +369,9 @@
                     }
                 });
 
-                document.getElementById('title').innerText = 'Select a note';
-
+                let doc = document.getElementById('content');
+                doc.contentEditable = true;
+                doc.focus();
             }
 
             else {
@@ -286,6 +382,18 @@
 
         document.getElementById('content').addEventListener('keyup', writeData);
 
+    }
+
+    function createFolder(folderName) {
+
+        if (fs.existsSync(`data/${folderName}`)) {
+            console.log(`folder ${folderName} already exists`);
+            $("#folderErrorModal").modal();
+        }
+        else {
+            fs.mkdirSync(`data/${folderName}`);
+            console.log(`creating folder: ${folderName}`);
+        }
     }
 
 
