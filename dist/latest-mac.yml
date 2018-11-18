@@ -1,0 +1,12 @@
+version: 1.0.0
+files:
+  - url: notableplusplus-1.0.0-mac.zip
+    sha512: VGk5fgP5xjsjh4MO/oh2uY1Ep6JAFnf+kov29uccpaWZ0YoMMFt+5ZluYECpVcPyXsvfcG5ymM+KL0b8nQfNIw==
+    size: 54142067
+    blockMapSize: 57315
+  - url: notableplusplus-1.0.0.dmg
+    sha512: ETZweMZ/2kFqLIGPnUUGI7ScgBJ8Bw2eu9Pf1llViyWSrwhZAqfX9/ejEtjUpIG5/AaqSNb2dHhzyJ73dafcWg==
+    size: 55862171
+path: notableplusplus-1.0.0-mac.zip
+sha512: VGk5fgP5xjsjh4MO/oh2uY1Ep6JAFnf+kov29uccpaWZ0YoMMFt+5ZluYECpVcPyXsvfcG5ymM+KL0b8nQfNIw==
+releaseDate: '2018-11-18T21:14:37.537Z'

@@ -4,16 +4,47 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
+
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "electron": "^3.0.8",
+    "electron-builder": "^20.36.2",
     "spectron": "^5.0.0"
   },
   "dependencies": {
     "jquery": "^3.3.1",
     "pouchdb": "^7.0.0"
+  },
+  "build": {
+    "appId": "notableplusplus",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "build/icon.ico"
+    }
   }
 }
